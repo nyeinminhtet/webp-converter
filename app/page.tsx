@@ -11,17 +11,6 @@ export default function HomePage() {
             Queue a small batch, convert everything together, then download each
             file separately or grab the whole set as a ZIP.
           </p>
-          <p className="creator-credit">
-            Created by{' '}
-            <a
-              href="https://github.com/nyeinminhtet"
-              target="_blank"
-              rel="noreferrer"
-              className="creator-link"
-            >
-              nyeinminhtet
-            </a>
-          </p>
 
           <div className="feature-list" aria-label="Highlights">
             <span>Up to 5 PNG files</span>
@@ -32,6 +21,21 @@ export default function HomePage() {
 
         <ConverterClient />
       </section>
+
+      <footer className="site-footer">
+        <p>
+          © 2026 Webply. Created by{' '}
+          <a
+            href="https://github.com/nyeinminhtet"
+            target="_blank"
+            rel="noreferrer"
+            className="creator-link"
+          >
+            nyeinminhtet
+          </a>
+          .
+        </p>
+      </footer>
     </main>
   );
 }
