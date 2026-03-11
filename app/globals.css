@@ -202,6 +202,11 @@ h1 {
   border-style: solid;
 }
 
+.dropzone.is-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .dropzone input {
   position: absolute;
   inset: 0;
@@ -320,6 +325,7 @@ button[type="submit"] {
 .results-section {
   display: grid;
   gap: 12px;
+  height: 100%;
 }
 
 .section-heading {
@@ -369,13 +375,72 @@ button[type="submit"] {
   font-size: 0.92rem;
 }
 
+.file-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 84px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.status-chip-queued {
+  color: var(--muted);
+}
+
+.status-chip-uploading,
+.status-chip-converting,
+.status-chip-downloading {
+  color: var(--accent-deep);
+}
+
+.status-chip-complete {
+  color: var(--success);
+}
+
+.status-chip-error {
+  color: var(--error);
+}
+
 .mini-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   flex-shrink: 0;
   padding: 10px 14px;
   border-radius: 12px;
   background: rgba(14, 40, 56, 0.92);
   color: var(--accent-deep);
   border: 1px solid rgba(78, 205, 196, 0.18);
+}
+
+.button-spinner {
+  width: 16px;
+  height: 16px;
+  animation: spin 0.9s linear infinite;
+}
+
+.button-spinner-track {
+  fill: none;
+  stroke: rgba(147, 243, 237, 0.24);
+  stroke-width: 2;
+}
+
+.button-spinner-head {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2.5;
 }
 
 .empty-state {
@@ -388,6 +453,12 @@ button[type="submit"] {
   border: 1px solid rgba(157, 179, 214, 0.1);
   min-height: 86px;
   text-align: center;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (min-width: 920px) {
@@ -433,6 +504,17 @@ button[type="submit"] {
   }
 
   button {
+    width: 100%;
+  }
+
+  .file-row,
+  .file-row-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .status-chip,
+  .mini-button {
     width: 100%;
   }
 }
