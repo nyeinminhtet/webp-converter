@@ -278,62 +278,77 @@ button[type='submit'] {
   gap: 16px;
 }
 
-.preview-frame {
-  min-height: 260px;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background:
-    linear-gradient(45deg, rgba(157, 179, 214, 0.06) 25%, transparent 25%),
-    linear-gradient(-45deg, rgba(157, 179, 214, 0.06) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, rgba(157, 179, 214, 0.06) 75%),
-    linear-gradient(-45deg, transparent 75%, rgba(157, 179, 214, 0.06) 75%);
-  background-position: 0 0, 0 12px, 12px -12px, -12px 0;
-  background-size: 24px 24px;
+.results-section {
   display: grid;
-  place-items: center;
-}
-
-.preview-image {
-  width: 100%;
-  height: 100%;
-  max-height: 340px;
-  object-fit: contain;
-}
-
-.preview-placeholder {
-  display: grid;
-  place-items: center;
-  color: var(--muted);
-  min-height: 260px;
-  padding: 24px;
-  text-align: center;
-}
-
-.file-meta {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
-.file-meta div {
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.section-label {
+  color: var(--muted);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.file-list {
+  display: grid;
+  gap: 10px;
+}
+
+.file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   border-radius: 16px;
-  padding: 16px;
+  padding: 14px 16px;
   background: rgba(11, 24, 38, 0.88);
   border: 1px solid rgba(157, 179, 214, 0.1);
 }
 
-.file-meta span {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--muted);
-  font-size: 0.82rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+.file-row-copy {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
 }
 
-.file-meta strong {
-  font-size: 1rem;
+.file-row-copy strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-row-copy span {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.mini-button {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(14, 40, 56, 0.92);
+  color: var(--accent-deep);
+  border: 1px solid rgba(78, 205, 196, 0.18);
+}
+
+.empty-state {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  border-radius: 16px;
+  padding: 16px;
+  background: rgba(11, 24, 38, 0.88);
+  border: 1px solid rgba(157, 179, 214, 0.1);
+  min-height: 86px;
+  text-align: center;
 }
 
 @media (min-width: 920px) {

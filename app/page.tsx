@@ -6,16 +6,16 @@ export default function HomePage() {
       <section className="hero">
         <div className="hero-copy">
           <span className="eyebrow">Fast image workflow</span>
-          <h1>Turn heavy PNGs into portable WebP files in one step.</h1>
+          <h1>Turn up to 5 PNGs into portable WebP files in one step.</h1>
           <p className="lead">
-            Drag in a screenshot, convert it, then download when you are ready.
-            No settings maze, no extra screens.
+            Queue a small batch, convert everything together, then download each
+            file separately or grab the whole set as a ZIP.
           </p>
 
           <div className="feature-list" aria-label="Highlights">
-            <span>Browser-based upload</span>
-            <span>Preview before download</span>
-            <span>PNG only, zero guesswork</span>
+            <span>Up to 5 PNG files</span>
+            <span>One-by-one downloads</span>
+            <span>Download all as ZIP</span>
           </div>
         </div>
 
