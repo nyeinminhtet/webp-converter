@@ -2,7 +2,7 @@
 
 Webply is a small Next.js app for converting PNG images to WebP. The interface uses a dark theme, supports up to 5 PNG uploads at once, shows the converted WebP file size after success, and lets the user either download files one by one or grab all converted files as a ZIP.
 
-Created by `nyeinminhtet`.
+Created by [nyeinminhtet](https://github.com/nyeinminhtet).
 
 ## Features
 
