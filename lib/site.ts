@@ -1,7 +1,8 @@
 export const siteConfig = {
-  name: 'PNG to WebP Converter',
+  name: 'Webply',
   description:
-    'Convert PNG images to WebP, preview the result, and download only when you are ready.',
+    'Webply converts PNG images to WebP, supports small batches, and lets you download files individually or as a ZIP.',
+  creator: 'nyeinminhtet',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
   locale: 'en_US',
 };

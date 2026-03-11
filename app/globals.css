@@ -29,9 +29,22 @@ body {
   font-family: "Avenir Next", "Segoe UI", sans-serif;
   color: var(--text);
   background:
-    radial-gradient(circle at top left, rgba(78, 205, 196, 0.14), transparent 28%),
-    radial-gradient(circle at right 20%, rgba(84, 132, 255, 0.18), transparent 26%),
-    linear-gradient(180deg, #0b1827 0%, var(--background) 52%, var(--background-deep) 100%);
+    radial-gradient(
+      circle at top left,
+      rgba(78, 205, 196, 0.14),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at right 20%,
+      rgba(84, 132, 255, 0.18),
+      transparent 26%
+    ),
+    linear-gradient(
+      180deg,
+      #0b1827 0%,
+      var(--background) 52%,
+      var(--background-deep) 100%
+    );
 }
 
 img {
@@ -80,7 +93,7 @@ h1 {
   margin: 18px 0 14px;
   font-family: "Iowan Old Style", "Palatino Linotype", serif;
   font-size: clamp(2.8rem, 5vw, 5rem);
-  line-height: 0.95;
+  line-height: 0.99;
   letter-spacing: -0.03em;
   max-width: 10ch;
 }
@@ -91,6 +104,13 @@ h1 {
   color: var(--muted);
   font-size: 1.05rem;
   line-height: 1.65;
+}
+
+.creator-credit {
+  margin: 14px 0 0;
+  color: var(--accent-deep);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
 }
 
 .feature-list {
@@ -227,7 +247,7 @@ button:disabled {
   opacity: 0.55;
 }
 
-button[type='submit'] {
+button[type="submit"] {
   background: linear-gradient(135deg, var(--accent) 0%, #5484ff 100%);
   color: #031019;
   box-shadow: 0 16px 30px rgba(78, 205, 196, 0.18);

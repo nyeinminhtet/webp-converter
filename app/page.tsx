@@ -5,12 +5,13 @@ export default function HomePage() {
     <main className="shell">
       <section className="hero">
         <div className="hero-copy">
-          <span className="eyebrow">Fast image workflow</span>
+          <span className="eyebrow">Webply</span>
           <h1>Turn up to 5 PNGs into portable WebP files in one step.</h1>
           <p className="lead">
             Queue a small batch, convert everything together, then download each
             file separately or grab the whole set as a ZIP.
           </p>
+          <p className="creator-credit">Created by nyeinminhtet</p>
 
           <div className="feature-list" aria-label="Highlights">
             <span>Up to 5 PNG files</span>

@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   applicationName: siteConfig.name,
+  authors: [{ name: siteConfig.creator }],
+  creator: siteConfig.creator,
+  publisher: siteConfig.creator,
   keywords: ['PNG to WebP', 'image converter', 'Next.js', 'WebP converter'],
   alternates: {
     canonical: '/',
