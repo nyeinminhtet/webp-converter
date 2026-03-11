@@ -438,29 +438,21 @@ export function ConverterClient() {
           </div>
         </label>
 
-        <div className="actions">
-          <button type="submit" disabled={isSubmitting || items.length === 0}>
-            {isSubmitting ? "Converting..." : "Convert to WebP"}
-          </button>
-          <button
-            type="button"
-            className="download-button"
-            onClick={handleDownloadAll}
-            disabled={
-              isSubmitting || isDownloadingAll || completedItems.length === 0
-            }
-          >
-            {isDownloadingAll ? "Preparing ZIP..." : "Download All ZIP"}
-          </button>
-          <button
-            type="button"
-            className="ghost-button"
-            onClick={handleReset}
-            disabled={isSubmitting || isDownloadingAll || items.length === 0}
-          >
-            Reset
-          </button>
-        </div>
+        {items.length > 0 ? (
+          <div className="actions">
+            <button type="submit" disabled={isSubmitting || items.length === 0}>
+              {isSubmitting ? "Converting..." : "Convert to WebP"}
+            </button>
+            <button
+              type="button"
+              className="ghost-button"
+              onClick={handleReset}
+              disabled={isSubmitting || isDownloadingAll || items.length === 0}
+            >
+              Reset
+            </button>
+          </div>
+        ) : null}
 
         <div className={`status tone-${statusTone}`} aria-live="polite">
           {status}
@@ -474,9 +466,21 @@ export function ConverterClient() {
         <div className="results-section">
           <div className="section-heading">
             <span className="section-label">File Status</span>
-            <strong>
-              {items.length} / {MAX_FILES}
-            </strong>
+            <div className="section-heading-actions">
+              <strong>
+                {items.length} / {MAX_FILES}
+              </strong>
+              {completedItems.length > 1 ? (
+                <button
+                  type="button"
+                  className="download-button section-download-all"
+                  onClick={handleDownloadAll}
+                  disabled={isSubmitting || isDownloadingAll}
+                >
+                  {isDownloadingAll ? "Preparing ZIP..." : "Download All ZIP"}
+                </button>
+              ) : null}
+            </div>
           </div>
 
           <div className="file-list">

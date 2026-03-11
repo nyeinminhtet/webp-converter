@@ -5,17 +5,17 @@ export default function HomePage() {
     <main className="shell">
       <section className="hero">
         <div className="hero-copy">
-          <span className="eyebrow">Webply</span>
-          <h1>Turn up to 5 PNGs into portable WebP files in one step.</h1>
+          <span className="eyebrow">PNG to WebP</span>
+          <h1>Convert PNG files to WebP in a cleaner batch workflow.</h1>
           <p className="lead">
-            Queue a small batch, convert everything together, then download each
-            file separately or grab the whole set as a ZIP.
+            Upload up to five PNG files, follow each conversion as it happens,
+            and download the results one by one or as a ZIP when ready.
           </p>
 
           <div className="feature-list" aria-label="Highlights">
-            <span>Up to 5 PNG files</span>
-            <span>One-by-one downloads</span>
-            <span>Download all as ZIP</span>
+            <span>Batch up to 5 files</span>
+            <span>Per-file progress</span>
+            <span>ZIP download when ready</span>
           </div>
         </div>
 

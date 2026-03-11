@@ -60,11 +60,12 @@ input {
 .shell {
   min-height: 100vh;
   padding: 32px 20px 48px;
+  max-width: 1280px;
+  margin: 0 auto;
 }
 
 .hero {
-  width: min(1120px, 100%);
-  margin: 0 auto;
+  width: 100%;
   display: grid;
   gap: 28px;
   align-items: start;
@@ -83,7 +84,7 @@ input {
 }
 
 .hero-copy {
-  max-width: 680px;
+  max-width: none;
   padding-top: 12px;
 }
 
@@ -107,12 +108,12 @@ h1 {
   font-size: clamp(2.8rem, 5vw, 5rem);
   line-height: 0.99;
   letter-spacing: -0.03em;
-  max-width: 10ch;
+  max-width: none;
 }
 
 .lead {
   margin: 0;
-  max-width: 56ch;
+  max-width: none;
   color: var(--muted);
   font-size: 1.05rem;
   line-height: 1.65;
@@ -289,6 +290,11 @@ button[type="submit"] {
   border: 1px solid rgba(78, 205, 196, 0.18);
 }
 
+.section-download-all {
+  padding: 10px 14px;
+  border-radius: 12px;
+}
+
 .status {
   min-height: 52px;
   display: flex;
@@ -332,6 +338,12 @@ button[type="submit"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+}
+
+.section-heading-actions {
+  display: flex;
+  align-items: center;
   gap: 12px;
 }
 
