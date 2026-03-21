@@ -8,6 +8,8 @@ const execFileAsync = promisify(execFile);
 
 export const runtime = 'nodejs';
 
+const allowedZipTypes = ['image/webp', 'image/jpeg', 'image/jpg'];
+
 function sanitizeFileName(fileName: string) {
   return fileName.replace(/[^a-zA-Z0-9._-]/g, '-');
 }
@@ -23,8 +25,8 @@ export async function POST(request: Request) {
       return new Response('No files uploaded.', { status: 400 });
     }
 
-    workingDirectory = await mkdtemp(join(tmpdir(), 'webp-zip-'));
-    const archivePath = join(workingDirectory, 'converted-webp-files.zip');
+    workingDirectory = await mkdtemp(join(tmpdir(), 'converted-zip-'));
+    const archivePath = join(workingDirectory, 'converted-files.zip');
     const writtenFiles: string[] = [];
 
     for (const file of files) {
@@ -32,8 +34,10 @@ export async function POST(request: Request) {
         return new Response('Invalid file upload.', { status: 400 });
       }
 
-      if (file.type !== 'image/webp') {
-        return new Response('Only WebP files can be zipped.', { status: 400 });
+      if (!allowedZipTypes.includes(file.type)) {
+        return new Response('Only converted image files can be zipped.', {
+          status: 400,
+        });
       }
 
       const outputPath = join(workingDirectory, sanitizeFileName(file.name));
@@ -52,7 +56,7 @@ export async function POST(request: Request) {
       status: 200,
       headers: {
         'Content-Type': 'application/zip',
-        'Content-Disposition': 'attachment; filename="converted-webp-files.zip"',
+        'Content-Disposition': 'attachment; filename="converted-files.zip"',
         'Content-Length': archiveBuffer.length.toString(),
       },
     });

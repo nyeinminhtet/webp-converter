@@ -173,6 +173,24 @@ h1 {
   gap: 16px;
 }
 
+.mode-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mode-button {
+  background: rgba(11, 26, 41, 0.72);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+.mode-button.is-active {
+  background: rgba(14, 40, 56, 0.92);
+  color: var(--accent-deep);
+  border-color: rgba(78, 205, 196, 0.24);
+}
+
 .dropzone {
   position: relative;
   display: grid;
