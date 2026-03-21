@@ -1,10 +1,4 @@
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-
-const execFileAsync = promisify(execFile);
+import { PassThrough } from 'node:stream';
 
 export const runtime = 'nodejs';
 
@@ -14,9 +8,36 @@ function sanitizeFileName(fileName: string) {
   return fileName.replace(/[^a-zA-Z0-9._-]/g, '-');
 }
 
-export async function POST(request: Request) {
-  let workingDirectory = '';
+async function createZipBuffer(files: File[]) {
+  const { default: archiver } = await import('archiver');
+  const archive = archiver('zip', { zlib: { level: 9 } });
+  const output = new PassThrough();
+  const chunks: Buffer[] = [];
 
+  const bufferPromise = new Promise<Buffer>((resolve, reject) => {
+    output.on('data', (chunk) => {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    });
+    output.on('end', () => {
+      resolve(Buffer.concat(chunks));
+    });
+    output.on('error', reject);
+    archive.on('error', reject);
+  });
+
+  archive.pipe(output);
+
+  for (const file of files) {
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
+    archive.append(fileBuffer, { name: sanitizeFileName(file.name) });
+  }
+
+  await archive.finalize();
+
+  return bufferPromise;
+}
+
+export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const files = formData.getAll('files');
@@ -25,9 +46,7 @@ export async function POST(request: Request) {
       return new Response('No files uploaded.', { status: 400 });
     }
 
-    workingDirectory = await mkdtemp(join(tmpdir(), 'converted-zip-'));
-    const archivePath = join(workingDirectory, 'converted-files.zip');
-    const writtenFiles: string[] = [];
+    const validFiles: File[] = [];
 
     for (const file of files) {
       if (!(file instanceof File)) {
@@ -40,17 +59,10 @@ export async function POST(request: Request) {
         });
       }
 
-      const outputPath = join(workingDirectory, sanitizeFileName(file.name));
-      const buffer = Buffer.from(await file.arrayBuffer());
-      await writeFile(outputPath, buffer);
-      writtenFiles.push(outputPath);
+      validFiles.push(file);
     }
 
-    await execFileAsync('/usr/bin/zip', ['-j', archivePath, ...writtenFiles], {
-      cwd: workingDirectory,
-    });
-
-    const archiveBuffer = await readFile(archivePath);
+    const archiveBuffer = await createZipBuffer(validFiles);
 
     return new Response(new Uint8Array(archiveBuffer), {
       status: 200,
@@ -62,9 +74,5 @@ export async function POST(request: Request) {
     });
   } catch {
     return new Response('Failed to create ZIP file.', { status: 500 });
-  } finally {
-    if (workingDirectory) {
-      await rm(workingDirectory, { recursive: true, force: true });
-    }
   }
 }
