@@ -2,25 +2,28 @@ import sharp from 'sharp';
 
 export const runtime = 'nodejs';
 
-type ConversionMode = 'png-to-jpg' | 'jpg-to-webp';
+type OutputFormat = 'jpg' | 'png' | 'webp';
 
-const conversionConfig: Record<
-  ConversionMode,
+const supportedInputTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+
+const outputConfig: Record<
+  OutputFormat,
   {
     contentType: string;
     extension: string;
-    inputTypes: string[];
   }
 > = {
-  'png-to-jpg': {
+  jpg: {
     contentType: 'image/jpeg',
     extension: 'jpg',
-    inputTypes: ['image/png'],
   },
-  'jpg-to-webp': {
+  png: {
+    contentType: 'image/png',
+    extension: 'png',
+  },
+  webp: {
     contentType: 'image/webp',
     extension: 'webp',
-    inputTypes: ['image/jpeg', 'image/jpg'],
   },
 };
 
@@ -29,28 +32,26 @@ function getOutputName(originalName: string, extension: string) {
   return `${baseName}.${extension}`;
 }
 
-function isConversionMode(value: FormDataEntryValue | null): value is ConversionMode {
-  return value === 'png-to-jpg' || value === 'jpg-to-webp';
+function isOutputFormat(value: FormDataEntryValue | null): value is OutputFormat {
+  return value === 'jpg' || value === 'png' || value === 'webp';
 }
 
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get('file');
-    const modeValue = formData.get('mode');
+    const outputFormatValue = formData.get('outputFormat');
 
     if (!(file instanceof File)) {
       return new Response('No file uploaded.', { status: 400 });
     }
 
-    if (!isConversionMode(modeValue)) {
-      return new Response('Invalid conversion mode.', { status: 400 });
+    if (!isOutputFormat(outputFormatValue)) {
+      return new Response('Invalid output format.', { status: 400 });
     }
 
-    const config = conversionConfig[modeValue];
-
-    if (!config.inputTypes.includes(file.type)) {
-      return new Response('This file type does not match the selected conversion mode.', {
+    if (!supportedInputTypes.includes(file.type)) {
+      return new Response('Only PNG, JPG, or WebP files are supported.', {
         status: 400,
       });
     }
@@ -59,10 +60,13 @@ export async function POST(request: Request) {
     const sharpInput = sharp(inputBuffer);
 
     const outputBuffer =
-      modeValue === 'png-to-jpg'
+      outputFormatValue === 'jpg'
         ? await sharpInput.jpeg({ quality: 90 }).toBuffer()
-        : await sharpInput.webp().toBuffer();
+        : outputFormatValue === 'png'
+          ? await sharpInput.png().toBuffer()
+          : await sharpInput.webp().toBuffer();
 
+    const config = outputConfig[outputFormatValue];
     const outputName = getOutputName(file.name, config.extension);
 
     return new Response(new Uint8Array(outputBuffer), {

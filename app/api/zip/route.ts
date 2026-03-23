@@ -2,7 +2,7 @@ import { PassThrough } from 'node:stream';
 
 export const runtime = 'nodejs';
 
-const allowedZipTypes = ['image/webp', 'image/jpeg', 'image/jpg'];
+const allowedZipTypes = ['image/webp', 'image/jpeg', 'image/jpg', 'image/png'];
 
 function sanitizeFileName(fileName: string) {
   return fileName.replace(/[^a-zA-Z0-9._-]/g, '-');

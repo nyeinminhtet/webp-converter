@@ -6,7 +6,7 @@ const MAX_FILES = 5;
 
 type StatusTone = 'idle' | 'info' | 'success' | 'error';
 type FileStatus = 'queued' | 'uploading' | 'converting' | 'complete' | 'error';
-type ConversionMode = 'png-to-jpg' | 'jpg-to-webp';
+type OutputFormat = 'jpg' | 'png' | 'webp';
 
 type FileItem = {
   downloadBlob?: Blob;
@@ -18,34 +18,28 @@ type FileItem = {
   status: FileStatus;
 };
 
-const modeConfig: Record<
-  ConversionMode,
+const outputConfig: Record<
+  OutputFormat,
   {
-    accept: string;
-    inputLabel: string;
-    inputTypes: string[];
-    outputExtension: 'jpg' | 'webp';
-    outputLabel: string;
-    selectorLabel: string;
+    contentType: string;
+    label: string;
   }
 > = {
-  'png-to-jpg': {
-    accept: 'image/png',
-    inputLabel: 'PNG',
-    inputTypes: ['image/png'],
-    outputExtension: 'jpg',
-    outputLabel: 'JPG',
-    selectorLabel: 'PNG to JPG',
+  jpg: {
+    contentType: 'image/jpeg',
+    label: 'JPG',
   },
-  'jpg-to-webp': {
-    accept: 'image/jpeg,image/jpg',
-    inputLabel: 'JPG',
-    inputTypes: ['image/jpeg', 'image/jpg'],
-    outputExtension: 'webp',
-    outputLabel: 'WebP',
-    selectorLabel: 'JPG to WebP',
+  png: {
+    contentType: 'image/png',
+    label: 'PNG',
+  },
+  webp: {
+    contentType: 'image/webp',
+    label: 'WebP',
   },
 };
+
+const supportedInputTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
 
 function formatBytes(bytes: number) {
   if (bytes < 1024) {
@@ -83,13 +77,13 @@ function getStatusLabel(status: FileStatus) {
 
 function convertFile(
   file: File,
-  mode: ConversionMode,
+  outputFormat: OutputFormat,
   onStatusChange: (status: FileStatus) => void,
 ) {
   return new Promise<Blob>((resolve, reject) => {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('mode', mode);
+    formData.append('outputFormat', outputFormat);
 
     const request = new XMLHttpRequest();
     request.open('POST', '/api/convert');
@@ -139,10 +133,10 @@ function convertFile(
 
 export function ConverterClient() {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [conversionMode, setConversionMode] = useState<ConversionMode>('png-to-jpg');
   const [items, setItems] = useState<FileItem[]>([]);
+  const [outputFormat, setOutputFormat] = useState<OutputFormat>('webp');
   const [status, setStatus] = useState(
-    `Drop in up to ${MAX_FILES} PNG files or browse from your device.`,
+    `Drop in up to ${MAX_FILES} PNG, JPG, or WebP files and choose the extension you want.`,
   );
   const [statusTone, setStatusTone] = useState<StatusTone>('idle');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -150,7 +144,7 @@ export function ConverterClient() {
   const [isDragActive, setIsDragActive] = useState(false);
   const [downloadingIds, setDownloadingIds] = useState<string[]>([]);
 
-  const activeMode = modeConfig[conversionMode];
+  const activeOutput = outputConfig[outputFormat];
 
   useEffect(() => {
     return () => {
@@ -178,23 +172,23 @@ export function ConverterClient() {
     setDownloadingIds([]);
   };
 
-  const updateItem = (id: string, updates: Partial<FileItem>) => {
-    setItems((currentItems) =>
-      currentItems.map((item) => (item.id === id ? { ...item, ...updates } : item)),
-    );
-  };
-
   const resetInput = () => {
     if (inputRef.current) {
       inputRef.current.value = '';
     }
   };
 
+  const updateItem = (id: string, updates: Partial<FileItem>) => {
+    setItems((currentItems) =>
+      currentItems.map((item) => (item.id === id ? { ...item, ...updates } : item)),
+    );
+  };
+
   const updateFiles = (nextFiles: File[]) => {
     if (nextFiles.length === 0) {
       clearItems();
       setStatus(
-        `Drop in up to ${MAX_FILES} ${activeMode.inputLabel} files or browse from your device.`,
+        `Drop in up to ${MAX_FILES} PNG, JPG, or WebP files and choose the extension you want.`,
       );
       setStatusTone('idle');
       return;
@@ -208,15 +202,11 @@ export function ConverterClient() {
       return;
     }
 
-    const invalidFile = nextFiles.find(
-      (file) => !activeMode.inputTypes.includes(file.type),
-    );
+    const invalidFile = nextFiles.find((file) => !supportedInputTypes.includes(file.type));
 
     if (invalidFile) {
       clearItems();
-      setStatus(
-        `Only ${activeMode.inputLabel} files are supported in this mode. ${invalidFile.name} was rejected.`,
-      );
+      setStatus(`Only PNG, JPG, or WebP files are supported. ${invalidFile.name} was rejected.`);
       setStatusTone('error');
       resetInput();
       return;
@@ -231,22 +221,20 @@ export function ConverterClient() {
       })),
     );
     setStatus(
-      `${nextFiles.length} ${activeMode.inputLabel} file${
-        nextFiles.length > 1 ? 's' : ''
-      } ready to convert.`,
+      `${nextFiles.length} file${nextFiles.length > 1 ? 's' : ''} ready to convert to ${activeOutput.label}.`,
     );
     setStatusTone('info');
   };
 
-  const handleModeChange = (mode: ConversionMode) => {
-    if (mode === conversionMode || isSubmitting) {
+  const handleOutputChange = (nextOutput: OutputFormat) => {
+    if (nextOutput === outputFormat || isSubmitting) {
       return;
     }
 
     clearItems();
-    setConversionMode(mode);
+    setOutputFormat(nextOutput);
     setStatus(
-      `Drop in up to ${MAX_FILES} ${modeConfig[mode].inputLabel} files or browse from your device.`,
+      `Drop in up to ${MAX_FILES} PNG, JPG, or WebP files and convert them to ${outputConfig[nextOutput].label}.`,
     );
     setStatusTone('idle');
     resetInput();
@@ -284,7 +272,7 @@ export function ConverterClient() {
   const handleReset = () => {
     clearItems();
     setStatus(
-      `Drop in up to ${MAX_FILES} ${activeMode.inputLabel} files or browse from your device.`,
+      `Drop in up to ${MAX_FILES} PNG, JPG, or WebP files and choose the extension you want.`,
     );
     setStatusTone('idle');
     resetInput();
@@ -294,16 +282,14 @@ export function ConverterClient() {
     event.preventDefault();
 
     if (items.length === 0) {
-      setStatus(`Choose at least one ${activeMode.inputLabel} image before converting.`);
+      setStatus('Choose at least one image before converting.');
       setStatusTone('error');
       return;
     }
 
     setIsSubmitting(true);
     setStatus(
-      `Converting ${items.length} ${activeMode.inputLabel} file${
-        items.length > 1 ? 's' : ''
-      } to ${activeMode.outputLabel}...`,
+      `Converting ${items.length} file${items.length > 1 ? 's' : ''} to ${activeOutput.label}...`,
     );
     setStatusTone('info');
 
@@ -312,13 +298,13 @@ export function ConverterClient() {
 
       for (const item of items) {
         try {
-          const blob = await convertFile(item.file, conversionMode, (nextStatus) => {
+          const blob = await convertFile(item.file, outputFormat, (nextStatus) => {
             updateItem(item.id, { status: nextStatus });
           });
 
           updateItem(item.id, {
             downloadBlob: blob,
-            downloadName: buildOutputName(item.file.name, activeMode.outputExtension),
+            downloadName: buildOutputName(item.file.name, outputFormat),
             downloadSize: blob.size,
             downloadUrl: URL.createObjectURL(blob),
             status: 'complete',
@@ -331,9 +317,7 @@ export function ConverterClient() {
 
       if (successCount === items.length) {
         setStatus(
-          `${items.length} ${activeMode.outputLabel} file${
-            items.length > 1 ? 's are' : ' is'
-          } ready.`,
+          `${items.length} ${activeOutput.label} file${items.length > 1 ? 's are' : ' is'} ready.`,
         );
         setStatusTone('success');
       } else if (successCount > 0) {
@@ -387,7 +371,7 @@ export function ConverterClient() {
 
     setIsDownloadingAll(true);
     setStatus(
-      `Preparing ZIP download for ${completedItems.length} ${activeMode.outputLabel} files...`,
+      `Preparing ZIP download for ${completedItems.length} ${activeOutput.label} files...`,
     );
     setStatusTone('info');
 
@@ -398,7 +382,7 @@ export function ConverterClient() {
         formData.append(
           'files',
           new File([item.downloadBlob as Blob], item.downloadName as string, {
-            type: activeMode.outputExtension === 'jpg' ? 'image/jpeg' : 'image/webp',
+            type: activeOutput.contentType,
           }),
         );
       }
@@ -417,13 +401,13 @@ export function ConverterClient() {
       const zipUrl = URL.createObjectURL(zipBlob);
       const anchor = document.createElement('a');
       anchor.href = zipUrl;
-      anchor.download = `converted-${activeMode.outputExtension}-files.zip`;
+      anchor.download = `converted-${outputFormat}-files.zip`;
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
       URL.revokeObjectURL(zipUrl);
 
-      setStatus(`Downloaded converted-${activeMode.outputExtension}-files.zip.`);
+      setStatus(`Downloaded converted-${outputFormat}-files.zip.`);
       setStatusTone('success');
     } catch (error) {
       const message =
@@ -441,16 +425,16 @@ export function ConverterClient() {
   return (
     <div className="panel">
       <form className="converter" onSubmit={handleSubmit}>
-        <div className="mode-picker" aria-label="Conversion mode">
-          {(Object.keys(modeConfig) as ConversionMode[]).map((mode) => (
+        <div className="mode-picker" aria-label="Target extension">
+          {(Object.keys(outputConfig) as OutputFormat[]).map((format) => (
             <button
-              key={mode}
+              key={format}
               type="button"
-              className={`mode-button ${conversionMode === mode ? 'is-active' : ''}`}
-              onClick={() => handleModeChange(mode)}
+              className={`mode-button ${outputFormat === format ? 'is-active' : ''}`}
+              onClick={() => handleOutputChange(format)}
               disabled={isSubmitting}
             >
-              {modeConfig[mode].selectorLabel}
+              To {outputConfig[format].label}
             </button>
           ))}
         </div>
@@ -466,28 +450,26 @@ export function ConverterClient() {
           <input
             ref={inputRef}
             type="file"
-            accept={activeMode.accept}
+            accept="image/png,image/jpeg,image/jpg,image/webp"
             multiple
             onChange={handleFileChange}
-            aria-label={`Upload ${activeMode.inputLabel} images`}
+            aria-label="Upload PNG, JPG, or WebP images"
             disabled={inputLocked}
           />
 
           <div className="dropzone-copy">
             <span className="dropzone-badge">
-              {items.length > 0
-                ? `${items.length} ${activeMode.inputLabel} selected`
-                : `Drop ${activeMode.inputLabel} files here`}
+              {items.length > 0 ? `${items.length} file selected` : 'Drop image files here'}
             </span>
             <strong>
               {items.length > 0
                 ? `${items.length} file${items.length > 1 ? 's' : ''} queued`
-                : `Choose up to 5 ${activeMode.inputLabel} files from your computer`}
+                : 'Choose up to 5 PNG, JPG, or WebP files'}
             </strong>
             <span>
               {inputLocked
                 ? 'Uploads are locked while conversion is running.'
-                : `${activeMode.selectorLabel} with per-file status and batch download support.`}
+                : `Pick the extension you want, then convert and download each file or the full ZIP.`}
             </span>
           </div>
         </label>
@@ -495,7 +477,7 @@ export function ConverterClient() {
         {items.length > 0 ? (
           <div className="actions">
             <button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? `Converting to ${activeMode.outputLabel}...` : `Convert to ${activeMode.outputLabel}`}
+              {isSubmitting ? `Converting to ${activeOutput.label}...` : `Convert to ${activeOutput.label}`}
             </button>
             <button
               type="button"
@@ -519,9 +501,7 @@ export function ConverterClient() {
       >
         <div className="results-section">
           <div className="section-heading">
-            <span className="section-label">
-              {activeMode.inputLabel} to {activeMode.outputLabel}
-            </span>
+            <span className="section-label">Output {activeOutput.label}</span>
             <div className="section-heading-actions">
               <strong>
                 {items.length} / {MAX_FILES}
@@ -546,9 +526,9 @@ export function ConverterClient() {
                   <div className="file-row-copy">
                     <strong>{item.file.name}</strong>
                     <span>
-                      {activeMode.inputLabel} {formatBytes(item.file.size)}
+                      {formatBytes(item.file.size)}
                       {item.downloadSize
-                        ? ` -> ${activeMode.outputLabel} ${formatBytes(item.downloadSize)}`
+                        ? ` -> ${activeOutput.label} ${formatBytes(item.downloadSize)}`
                         : ''}
                     </span>
                   </div>
@@ -584,7 +564,7 @@ export function ConverterClient() {
                             Loading...
                           </>
                         ) : (
-                          `Download ${activeMode.outputLabel}`
+                          `Download ${activeOutput.label}`
                         )}
                       </button>
                     ) : null}
@@ -593,7 +573,7 @@ export function ConverterClient() {
               ))
             ) : (
               <div className="empty-state">
-                Converted files will appear here after you choose a mode and upload images.
+                Converted files will appear here after you upload supported images.
               </div>
             )}
           </div>
