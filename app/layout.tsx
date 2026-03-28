@@ -1,9 +1,8 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import type { ReactNode } from 'react';
-import { Analytics } from '@vercel/analytics/next';
+import "./globals.css";
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
 
-import { siteConfig } from '@/lib/site';
+import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -17,39 +16,39 @@ export const metadata: Metadata = {
   creator: siteConfig.creator,
   publisher: siteConfig.creator,
   keywords: [
-    'png to webp',
-    'png to jpg',
-    'jpg to png',
-    'jpg to webp',
-    'webp to jpg',
-    'webp to png',
-    'image converter',
-    'online image converter',
-    'batch image converter',
-    'convert png to webp online',
-    'convert png to jpg online',
-    'convert jpg to png online',
-    'convert jpg to webp online',
-    'convert webp online',
-    'free image converter',
-    'webp converter',
-    'jpg converter',
-    'png converter',
-    'Webply',
+    "png to webp",
+    "png to jpg",
+    "jpg to png",
+    "jpg to webp",
+    "webp to jpg",
+    "webp to png",
+    "image converter",
+    "online image converter",
+    "batch image converter",
+    "convert png to webp online",
+    "convert png to jpg online",
+    "convert jpg to png online",
+    "convert jpg to webp online",
+    "convert webp online",
+    "free image converter",
+    "webp converter",
+    "jpg converter",
+    "png converter",
+    "Webply",
   ],
-  category: 'technology',
+  category: "technology",
   alternates: {
-    canonical: '/',
+    canonical: "/",
   },
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/icon.png', type: 'image/png' },
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
     ],
-    apple: [{ url: '/apple-icon.png', type: 'image/png' }],
+    apple: [{ url: "/apple-icon.png", type: "image/png" }],
   },
   openGraph: {
-    type: 'website',
+    type: "website",
     url: siteConfig.url,
     title: siteConfig.title,
     description: siteConfig.description,
@@ -57,7 +56,7 @@ export const metadata: Metadata = {
     locale: siteConfig.locale,
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title: siteConfig.title,
     description: siteConfig.description,
   },
@@ -67,9 +66,9 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-      'max-video-preview': -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
     },
   },
 };
@@ -82,7 +81,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body>{children}</body>
-      <Analytics />
     </html>
   );
 }
